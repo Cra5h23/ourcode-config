@@ -1,0 +1,90 @@
+spring:
+  jpa:
+    show-sql: true
+  liquibase:
+    enabled: false
+    change-log: db/changelog/db.changelog-master.xml
+
+  kafka:
+    bootstrap-servers: localhost:9092,localhost:9093,localhost:9094
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+      batch-size: 16384
+      buffer-memory: 33554432
+      compression-type: snappy
+      properties:
+        schema.registry.url: http://localhost:9081
+    consumer:
+      enable-auto-commit: false
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+      group-id: device-group
+      max-poll-records: 50
+      fetch-max-wait: 2000
+      properties:
+        specific.avro.reader: true
+        schema.registry.url: http://localhost:9081
+
+management:
+  server:
+    port: 8082
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+  endpoint:
+    prometheus:
+      enabled: true
+  tracing:
+    enabled: true
+    sampling:
+      probability: 1.0
+    otlp:
+      endpoint: http://localhost:4318
+      protocol: http/protobuf
+
+otel:
+  service:
+    name: device-collector
+  exporter:
+    otlp:
+      endpoint: http://localhost:4318
+    protocol: http/protobuf
+  metric:
+    exporter: none
+  traces:
+    exporter: otlp
+  logs:
+    exporter: none
+  resource:
+    attributes: service.version=1.0.0,deployment.environment=docker
+
+kafka:
+  topic:
+    devices:
+      name: devices
+    devices-dlt:
+      name: devices.DLT
+      partitions: 3
+      replicas: 2
+
+device:
+  collector:
+    db:
+      0:
+        driver: org.postgresql.Driver
+        url: jdbc:postgresql://localhost:5433/ourcode-db-0
+        username: postgresUser
+        password: postresPassword
+      1:
+        driver: org.postgresql.Driver
+        url: jdbc:postgresql://localhost:5434/ourcode-db-1
+        username: postgresUser
+        password: postresPassword
+    max.retries: 3
+    delay: 1000
