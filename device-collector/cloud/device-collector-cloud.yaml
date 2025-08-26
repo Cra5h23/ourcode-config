@@ -69,6 +69,8 @@ kafka:
   topic:
     devices:
       name: devices
+      partitions: 3
+      replicas: 2
     devices-dlt:
       name: devices.DLT
       partitions: 3
