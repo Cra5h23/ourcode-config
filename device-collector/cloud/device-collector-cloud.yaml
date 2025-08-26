@@ -14,7 +14,8 @@ spring:
       buffer-memory: 33554432
       compression-type: snappy
       properties:
-        schema.registry.url: http://localhost:9081
+#        schema.registry.url: http://localhost:9081
+        schema.registry.url: '{cipher}0ffb575aae2faa3eab0c69292edfe4b6b499cc5bdebed4a7fbea31cdad660e216ce41f769c91642c3b390f77be0e062a'
     consumer:
       enable-auto-commit: false
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
